@@ -7,6 +7,7 @@ import (
 	forcessl "github.com/gobuffalo/mw-forcessl"
 	paramlogger "github.com/gobuffalo/mw-paramlogger"
 	"github.com/unrolled/secure"
+	"lendo_service/jobupdate"
 	"lendo_service/middleware"
 
 	"lendo_service/models"
@@ -61,7 +62,8 @@ func App() *buffalo.App {
 		// Setup and use translations:
 		app.Use(translations())
 
-		app.Use(middleware.PubSub(middleware.Pub, middleware.Sub))
+		app.Use(middleware.PubMiddleware(middleware.Pub))
+		app.Use(middleware.BankingMiddleware(middleware.Banking))
 
 		app.GET("/", HomeHandler)
 
@@ -69,6 +71,9 @@ func App() *buffalo.App {
 
 		app.Resource("/applications", ApplicationsResource{})
 		app.ServeFiles("/", assetsBox) // serve files from the public directory
+
+		updater := jobupdate.NewUpdater(models.DB)
+		go updater.Poll()
 	}
 
 	return app

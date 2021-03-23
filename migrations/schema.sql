@@ -27,8 +27,8 @@ SET default_with_oids = false;
 CREATE TABLE public.applications (
     id uuid NOT NULL,
     first_name character varying(255) NOT NULL,
-    last_name character varying(255),
-    status character varying(255),
+    last_name character varying(255) NOT NULL,
+    status character varying(255) NOT NULL,
     job_id character varying(255),
     created_at timestamp without time zone NOT NULL,
     updated_at timestamp without time zone NOT NULL

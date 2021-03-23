@@ -13,8 +13,8 @@ import (
 type Application struct {
     ID uuid.UUID `json:"id" db:"id"`
     FirstName string `json:"first_name" db:"first_name"`
-    LastName nulls.String `json:"last_name" db:"last_name"`
-    Status nulls.String `json:"status" db:"status"`
+    LastName string `json:"last_name" db:"last_name"`
+    Status string `json:"status" db:"status"`
     JobID nulls.String `json:"job_id" db:"job_id"`
     CreatedAt time.Time `json:"created_at" db:"created_at"`
     UpdatedAt time.Time `json:"updated_at" db:"updated_at"`
@@ -40,6 +40,7 @@ func (a Applications) String() string {
 func (a *Application) Validate(tx *pop.Connection) (*validate.Errors, error) {
 	return validate.Validate(
 		&validators.StringIsPresent{Field: a.FirstName, Name: "FirstName"},
+		&validators.StringIsPresent{Field: a.LastName, Name: "LastName"},
 	), nil
 }
 
