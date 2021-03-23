@@ -46,11 +46,17 @@ func (v ApplicationsResource) List(c buffalo.Context) error {
   // Default values are "page=1" and "per_page=20".
   q := tx.PaginateFromParams(c.Params())
 
+  statusFilter := c.Param("with_status")
+
+  switch statusFilter {
+  case banking.STATUS_REJECTED, banking.STATUS_COMPLETED, banking.STATUS_PENDING:
+    q = q.Where("status = ?", statusFilter)
+  }
+
   // Retrieve all Applications from the DB
   if err := q.All(applications); err != nil {
     return err
   }
-
   return responder.Wants("html", func (c buffalo.Context) error {
     // Add the paginator to the context so it can be used in the template.
     c.Set("pagination", q.Paginator)
