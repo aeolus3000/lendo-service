@@ -1,0 +1,8 @@
+create_table("applications") {
+	t.Column("id", "uuid", {primary: true})
+	t.Column("first_name", "string", {})
+	t.Column("last_name", "string", {null: true})
+	t.Column("status", "string", {null: true})
+	t.Column("job_id", "string", {null: true})
+	t.Timestamps()
+}
