@@ -18,7 +18,7 @@ var (
 func init() {
 	config := configuration.NewDefaultConfiguration()
 	bankingConfiguration := banking.Configuration{}
-	confErr := config.Process(configPrefix + configBankingPrefix, &bankingConfiguration)
+	confErr := config.Process(configPrefix + "_" + configBankingPrefix, &bankingConfiguration)
 	if confErr != nil {
 		log.Fatal(confErr)
 	}
