@@ -42,6 +42,8 @@ EXPOSE 3000
 ADD https://github.com/ufoscout/docker-compose-wait/releases/download/2.8.0/wait /wait
 RUN chmod +x /wait
 
+ADD ./doc/swagger.json /bin/doc/swagger.json
+
 # Uncomment to run the migrations before running the binary:
 CMD /wait && /bin/app migrate; /bin/app
 #CMD exec /bin/app
