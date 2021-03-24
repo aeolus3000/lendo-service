@@ -3,7 +3,9 @@ package middleware
 import (
 	"github.com/aeolus3000/lendo-sdk/banking"
 	"github.com/aeolus3000/lendo-sdk/banking/dnb"
+	"github.com/aeolus3000/lendo-sdk/configuration"
 	"github.com/gobuffalo/buffalo"
+	log "github.com/sirupsen/logrus"
 )
 
 
@@ -14,7 +16,13 @@ var (
 )
 
 func init() {
-	Banking = dnb.NewDnbBanking(dnb.NewDnbDefaultConfiguration())
+	config := configuration.NewDefaultConfiguration()
+	bankingConfiguration := banking.Configuration{}
+	confErr := config.Process(configBankingPrefix, &bankingConfiguration)
+	if confErr != nil {
+		log.Fatal(confErr)
+	}
+	Banking = dnb.NewDnbBanking(banking.Configuration{})
 }
 
 func BankingMiddleware(api banking.BankingApi) buffalo.MiddlewareFunc {
