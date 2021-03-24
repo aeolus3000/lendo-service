@@ -22,7 +22,7 @@ func init() {
 	if confErr != nil {
 		log.Fatal(confErr)
 	}
-	Banking = dnb.NewDnbBanking(banking.Configuration{})
+	Banking = dnb.NewDnbBanking(bankingConfiguration)
 }
 
 func BankingMiddleware(api banking.BankingApi) buffalo.MiddlewareFunc {
