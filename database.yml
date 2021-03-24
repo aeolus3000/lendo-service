@@ -11,4 +11,4 @@ test:
   url: {{envOr "TEST_DATABASE_URL" "postgres://postgres:postgres@127.0.0.1:5432/lendo_service_test?sslmode=disable"}}
 
 production:
-  url: {{envOr "DATABASE_URL" "postgres://postgres:postgres@lendo_service:5432/lendo_service_production?sslmode=disable"}}
+  url: {{envOr "DATABASE_URL" "postgres://postgres:postgres@127.0.0.1:5432/lendo_service_production?sslmode=disable"}}
