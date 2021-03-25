@@ -2,7 +2,7 @@
   "openapi": "3.0.0",
   "info": {
     "version": "0.0.1",
-    "title": "Lendo Enterprise Services",
+    "title": "Lendo Interview Excercise",
     "description": "Exercise description if we end up hosting everything.\n",
     "x-logo": {
       "url": "https://cdn.lendo.se/v4/svg/logodark.svg",
@@ -11,21 +11,17 @@
   },
   "servers": [
     {
-      "url": "https://localhost:8000/"
+      "url": "http://localhost:8000/"
     }
   ],
   "tags": [
     {
       "name": "Applications",
       "description": "An application is the most important part of our domain. It represents the intent of a customer to get a loan."
-    },
-    {
-      "name": "Jobs",
-      "description": "A job is used for retrieving the status of a certain application.  Jobs are needed as not all our partners answer immediately."
     }
   ],
   "paths": {
-    "/api/applications": {
+    "/applications": {
       "post": {
         "tags": [
           "Applications"
@@ -53,8 +49,8 @@
               }
             }
           },
-          "400": {
-            "description": "duplicate application id.",
+          "500": {
+            "description": "Item can't be processed",
             "content": {
               "application/json": {
                 "schema": {
@@ -66,17 +62,64 @@
         }
       }
     },
-    "/api/jobs": {
+    "/applications/": {
       "get": {
         "tags": [
-          "Jobs"
+          "Applications"
         ],
-        "summary": "Get job by application ID",
-        "operationId": "getJob",
+        "summary": "Get all applications (with a status)",
+        "operationId": "getAllApplications",
+        "parameters": [
+          {
+            "name": "with_status",
+            "in": "query",
+            "description": "The status to filter the list of applications",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "pending",
+                "completed",
+                "rejected"
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "applications retrieved",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ListApplicationResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Query can't be processed",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/applications/{application_id}": {
+      "get": {
+        "tags": [
+          "Applications"
+        ],
+        "summary": "Get application by application ID",
+        "operationId": "getApplication",
         "parameters": [
           {
             "name": "application_id",
-            "in": "query",
+            "in": "path",
             "description": "ID of the application",
             "required": true,
             "schema": {
@@ -87,21 +130,11 @@
         ],
         "responses": {
           "200": {
-            "description": "job retrieved",
+            "description": "application retrieved",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/JobResponse"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "failed to get job, the application id was not provided / not a valid UUID",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/JobError"
+                  "$ref": "#/components/schemas/ApplicationResponse"
                 }
               }
             }
@@ -111,7 +144,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Job404Error"
+                  "$ref": "#/components/schemas/Application404Error"
                 }
               }
             }
@@ -140,7 +173,6 @@
           }
         },
         "required": [
-          "id",
           "first_name",
           "last_name"
         ]
@@ -155,7 +187,11 @@
           },
           "status": {
             "type": "string",
-            "example": "pending"
+            "enum": [
+              "completed",
+              "rejected"
+            ],
+            "example": "completed"
           },
           "first_name": {
             "type": "string",
@@ -164,42 +200,34 @@
           "last_name": {
             "type": "string",
             "example": "Doe"
+          },
+          "job_id": {
+            "type": "string",
+            "example": "472c3849-a01b-4eb3-8d1a-6f32f0b558ff"
+          },
+          "created_at": {
+            "type": "string",
+            "example": "2021-03-25T18:32:51.725104Z"
+          },
+          "updated_at": {
+            "type": "string",
+            "example": "2021-03-25T18:32:51.725104Z"
           }
-        }
+        },
+        "required": [
+          "id",
+          "status",
+          "first_name",
+          "last_name"
+        ]
       },
-      "JobResponse": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "string",
-            "format": "uuid",
-            "example": "ef29a441-68a4-4d07-9cf8-206c977b5ab4"
-          },
-          "application_id": {
-            "type": "string",
-            "format": "uuid",
-            "example": "372c3849-a01b-4eb3-8c18-6f32f0b588ef"
-          },
-          "status": {
-            "type": "string",
-            "enum": [
-              "completed",
-              "rejected"
-            ]
-          }
+      "ListApplicationResponse": {
+        "type": "array",
+        "items": {
+          "$ref": "#/components/schemas/ApplicationResponse"
         }
       },
       "Error": {
-        "type": "object",
-        "properties": {
-          "error": {
-            "type": "string",
-            "format": "uuid",
-            "example": "the application ID is already used."
-          }
-        }
-      },
-      "JobError": {
         "type": "object",
         "properties": {
           "error": {
@@ -209,7 +237,7 @@
           }
         }
       },
-      "Job404Error": {
+      "Application404Error": {
         "type": "object",
         "properties": {
           "error": {
